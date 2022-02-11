@@ -10,7 +10,9 @@ const serverAddress = 'http://localhost:3000'
 const listenForLatestBlockAndReplay = require('./utils/geth/listen-and-replay')
 const testTransactionReplay = require('./test/test-transaction-replay')
 
-listenForLatestBlockAndReplay(1, true)
+listenForLatestBlockAndReplay(2, true)
+
+// replayBlock(14182666, true, false, false);
 
 
-// testTransactionReplay('0x13e0fcc93d2a865e6a8dafab6f98323c9ad74a17ef48d3f878e29571e50ae105', 14182521).then(x => console.log(x));
+// testTransactionReplay('0x28add291ce43bbe0982479fae0cb72e4a75af6ff142bc58f271c70c10581b4c0', 14182644).then(x => console.log(x));

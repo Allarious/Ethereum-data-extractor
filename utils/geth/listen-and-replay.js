@@ -9,6 +9,8 @@ const web3 = new Web3(web3Provider);
 const eth = web3.eth;
 const serverAddress = 'http://localhost:3000'
 
+debug = true
+
 //TODO: Mode can be better
 async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
 
@@ -32,13 +34,21 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
 
         if(verbose)
             console.log("fetching block " + blockNumber + "'s data.")
+        // We are getting block data two times in the whole process (once fetchBlock and once here), is that ok?
         blockData = await eth.getBlock(blockNumber)
 
         if(verbose)
-            console.log("Replaying Block " + blockNumber)
+            console.log("Replaying Block " + blockNumber);
+        
+        let {onlyIfFailed, includeAllFailed} = handleMode(mode);
 
-        let {onlyIfFailed, includeAllFailed} = handleMode(mode)
+        if(debug) {
+            console.log("onlyIfFailed:" + onlyIfFailed)
+            console.log("includeAllFailed" + includeAllFailed)
+        }
 
+        if(debug)
+            console.log("XXXXXXXXXXXXXXXXXXXXXXXbefore replay block: blockNumber " + blockNumber + " verbose " + verbose + " onlyIfFailed " + onlyIfFailed + " includeAllFailed " + includeAllFailed)
         let transactions = await replayBlock(blockNumber, verbose, onlyIfFailed, includeAllFailed);
 
         if(verbose) {
@@ -57,13 +67,13 @@ async function postDataToServer(blockData, transactions, verbose = false){
         console.log('sending block to db:')
         console.log(blockData)
     }
-    axios.post(serverAddress + '/blocks', JSON.stringify(blockData));
+    await axios.post(serverAddress + '/blocks', JSON.stringify(blockData));
     for (const transaction of transactions) {
         if(verbose) {
             console.log("sending transaction to db:")
             console.log(transaction)
         }
-        axios.post(serverAddress + '/transactions', JSON.stringify(transaction));
+        await axios.post(serverAddress + '/transactions', JSON.stringify(transaction));
     }
 }
 
@@ -77,13 +87,13 @@ async function handleBlockRepetition(verbose = false){
         console.log("sleeping is over!")
 }
 
-async function handleMode(mode) {
+function handleMode(mode) {
     let onlyIfFailed;
     let includeAllFailed;
-    // onlyIfFailed: true, includeAllFailed: false -> 0 fastest
-    // onlyIfFailed: true, includeAllFailed: true -> 1 second fastest
-    // onlyIfFailed: false, includeAllFailed: false -> 2 third fastest, default most convenient!
-    // onlyIfFailed: false, includeAllFailed: true -> 3 slowest
+    // onlyIfFailed: true, includeAllFailed: false -> 0 fastest, if failed transactions are ran true in simulation
+    // onlyIfFailed: true, includeAllFailed: true -> 1 second fastest, all failed transactions, and simulate them
+    // onlyIfFailed: false, includeAllFailed: false -> 2 third fastest, default most convenient! Anything that is not the same result in the simulation
+    // onlyIfFailed: false, includeAllFailed: true -> 3 slowest, simulation differs or is failed on chain
     //Not great to have a switch statement!
     switch(mode) {
         case 0:
