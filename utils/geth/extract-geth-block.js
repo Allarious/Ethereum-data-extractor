@@ -4,7 +4,7 @@ var web3Provider = new Web3.providers.HttpProvider(provider);
 var web3 = new Web3(web3Provider);
 var eth = web3.eth;
 
-async function fetchBlock(blockNumber){
+async function fetchBlock(blockNumber, verbose = false){
     try{
         blockData = await eth.getBlock(blockNumber);
         return blockData.transactions;
