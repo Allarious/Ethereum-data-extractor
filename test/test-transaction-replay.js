@@ -3,7 +3,7 @@ const provider = 'http://localhost:8545';
 const web3Provider = new Web3.providers.HttpProvider(provider);
 const web3 = new Web3(web3Provider);
 const eth = web3.eth;
-const callTransaction = require('../utils/geth/call-geth-transactions')
+// const callTransaction = require('../utils/geth/call-geth-transactions')
 
 async function testTransactionReplay(transactionHash, blockNumber){
     try{

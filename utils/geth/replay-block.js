@@ -1,5 +1,5 @@
 const fetchBlock = require("../etherscan/extract-etherscan-block");
-const replayTransaction = require("./transaction-extractor");
+const replayTransaction = require("./replay-transaction");
 
 debug = false
 
