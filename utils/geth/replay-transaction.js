@@ -14,7 +14,7 @@ async function replayTransaction(transactionHash, onlyIfFailed, includeAllFailed
 
     const blockNumber = transactionObject.blockNumber
 
-    const simulationResult = await callTransaction(transactionObject, blockNumber - previousStateDepth); // We want to run the transaction from the previous block
+    const {simulationResult, simulationInfo} = await callTransaction(transactionObject, blockNumber - previousStateDepth, true); // We want to run the transaction from the previous block
 
     //if a transaction was failed or ran at the start
     if (simulationResult !== transactionReceipt.status || (!transactionReceipt.status && includeAllFailed)){
