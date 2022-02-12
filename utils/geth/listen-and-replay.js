@@ -1,5 +1,5 @@
 const replayBlock = require("./replay-block");
-const axios = require("axios");
+const sendPostAndRetry = require('../general/sendPostAndRetry')
 const delay = require("../general/delay");
 
 const Web3 = require('web3');
@@ -71,13 +71,13 @@ async function postDataToServer(blockData, transactions, verbose = false){
         console.log('sending block to db:')
         console.log(blockData)
     }
-    await axios.post(serverAddress + '/blocks', JSON.stringify(blockData));
+    await sendPostAndRetry(serverAddress + '/blocks', blockData);
     for (const transaction of transactions) {
         if(verbose) {
             console.log("sending transaction to db:")
             console.log(transaction)
         }
-        await axios.post(serverAddress + '/transactions', JSON.stringify(transaction));
+        await sendPostAndRetry(serverAddress + '/transactions', transaction);
     }
 }
 

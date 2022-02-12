@@ -26,6 +26,21 @@ async function transactionReceiptExtractor(tx_hash) {
     }
 }
 
+async function callTransaction(txObject, blockNumber) {
+    try {
+        console.log("Transaction is called------->" + txObject.hash)
+        console.log("Block number--------->" + blockNumber)
+        await eth.call(txObject, blockNumber);
+        console.log("Successful!")
+        return true
+    } catch (e){
+        // Considering that every error relates to the transaction actually failing after the simulation
+        //TODO check and see if there is a difference between the transaction failing onChain or in code
+        console.log("Failed!")
+        return false
+    }
+}
+
 //TODO is returning false a good choice here?
 async function replayTransaction(txHash, onlyIfFailed, includeAllFailed){
     const transactionReceipt = await transactionReceiptExtractor(txHash);
@@ -46,10 +61,10 @@ async function replayTransaction(txHash, onlyIfFailed, includeAllFailed){
 
     const blockNumber = transactionObject.blockNumber
 
-    // const simulationResult = await callTransaction(transactionObject, blockNumber - previousStateDepth); // We want to run the transaction from the previous block
+    const simulationResult = await callTransaction(transactionObject, blockNumber - previousStateDepth); // We want to run the transaction from the previous block
     //*******
 
-    const simulationResult = await callGethTransaction(transactionObject, blockNumber - previousStateDepth)
+    // const simulationResult = await callGethTransaction(transactionObject, blockNumber - previousStateDepth)
 
     //if a transaction was failed or ran at the start
     if (simulationResult !== transactionReceipt.status || (!transactionReceipt.status && includeAllFailed)){
