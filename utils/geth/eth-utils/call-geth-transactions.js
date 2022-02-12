@@ -8,15 +8,17 @@ async function callTransactionsViaGeth(transactionData, blockNumber) {
     try {
         console.log("Transaction is called------->" + transactionData.hash)
         console.log("Block number--------->" + blockNumber)
-        await eth.call(transactionData, blockNumber);
+        let result = await eth.call(transactionData, blockNumber);
         // This line will be reached if eth.call is not throwing data
         // if eth.call changes in the future and returns something for failed transactions, this code will be wrong.
+        console.log(result)
         console.log("Successful!")
         return true
     } catch (e){
         // Considering that every error relates to the transaction actually failing after the simulation
         //TODO check and see if there is a difference between the transaction failing onChain or in code
-        console.log("Failed!")
+        console.log("FAILED!")
+        console.log(e)
         return false
     }
 }

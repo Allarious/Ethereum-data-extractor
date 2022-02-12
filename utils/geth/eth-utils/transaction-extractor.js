@@ -4,22 +4,42 @@ var web3Provider = new Web3.providers.HttpProvider(provider);
 var web3 = new Web3(web3Provider);
 var eth = web3.eth;
 
-async function transactionExtractor(tx_hash) {
+
+//TODO:: should I return errors instead of simply false?
+async function transactionExtractor(transactionHash) {
     try {
-        return await eth.getTransaction(tx_hash);
+        return await eth.getTransaction(transactionHash);
     } catch (e) {
-        console.log("Transaction " + tx_hash + " could not be fetched, there might be a problem with geth")
+        console.log("Transaction " + transactionHash + " could not be fetched, there might be a problem with geth")
         return false
     }
 }
 
-async function transactionReceiptExtractor(tx_hash) {
+async function transactionReceiptExtractor(transactionHash) {
     try {
-        return await eth.getTransactionReceipt(tx_hash)
+        return await eth.getTransactionReceipt(transactionHash)
     } catch (e) {
-        console.log("Transaction receipt " + tx_hash + " could not be fetched, there might be a problem with geth")
+        console.log("Transaction receipt " + transactionHash + " could not be fetched, there might be a problem with geth")
         return false
     }
 }
 
-module.exports = { transactionExtractor, transactionReceiptExtractor };
+async function extractTransactionInfo(transactionHash){
+
+    let transactionReceipt = await transactionReceiptExtractor(transactionHash);
+    let transactionObject = null;
+
+    if(!transactionReceipt) {
+        return {transactionReceipt: null, transactionObject: null}
+    }
+
+    transactionObject = await transactionExtractor(transactionHash);
+
+    if(!transactionObject){
+        return {transactionReceipt, transactionObject: null}
+    }
+
+    return { transactionReceipt, transactionObject }
+}
+
+module.exports = extractTransactionInfo;

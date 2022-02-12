@@ -1,23 +1,14 @@
 const callTransaction = require("./eth-utils/call-geth-transactions");
-const { transactionExtractor, transactionReceiptExtractor } = require("./eth-utils/transaction-extractor");
+const extractTransactionInfo = require("./eth-utils/transaction-extractor");
 
 const previousStateDepth = 1;
 
 //TODO is returning false a good choice here?
-async function replayTransaction(txHash, onlyIfFailed, includeAllFailed){
-    const transactionReceipt = await transactionReceiptExtractor(txHash);
+async function replayTransaction(transactionHash, onlyIfFailed, includeAllFailed){
 
-    if(!transactionReceipt) {
-        return false
-    }
+    const { transactionObject, transactionReceipt } = await extractTransactionInfo(transactionHash);
 
-    if(onlyIfFailed && transactionReceipt.status){
-        return false
-    }
-
-    const transactionObject = await transactionExtractor(txHash);
-
-    if(!transactionObject){
+    if(!handleIfTransactionShouldReplay(transactionObject, transactionReceipt, onlyIfFailed)){
         return false
     }
 
@@ -31,6 +22,29 @@ async function replayTransaction(txHash, onlyIfFailed, includeAllFailed){
         return {chainReceipt: transactionReceipt.status, simulatedRun: simulationResult, transactionReceipt: transactionReceipt, transactionObject: transactionObject}
     }
     return false
+}
+
+async function handleIfTransactionShouldReplay(transactionObject, transactionReceipt, onlyIfFailed){
+
+    if(transactionObject === null || transactionReceipt === null){
+        if(transactionObject === null || transactionReceipt !== null){
+            console.log("Transaction receipt could not be fetched, skipping this transaction.")
+        }
+        if(transactionObject !== null || transactionReceipt === null){
+            console.log("Transaction object could not be fetched, skipping this transaction.")
+        }
+        if(transactionObject === null && transactionReceipt === null){
+            console.log("Transaction object and transaction receipt could not be fetched, skipping this transaction.")
+        }
+        return false
+    }
+
+    const transactionChainStatus = transactionReceipt.status;
+    if(onlyIfFailed && transactionChainStatus){
+        return false
+    }
+
+    return true
 }
 
 module.exports = replayTransaction

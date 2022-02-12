@@ -1,5 +1,6 @@
 const replayBlock = require('./utils/geth/replay-block');
 const listenForLatestBlockAndReplay = require('./utils/geth/listen-and-replay')
+const replayTransaction = require('./')
 
 listenForLatestBlockAndReplay(1, true)
 
