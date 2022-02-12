@@ -5,7 +5,6 @@ var web3 = new Web3(web3Provider);
 var eth = web3.eth;
 
 
-//TODO:: should I return errors instead of simply false?
 async function transactionExtractor(transactionHash) {
     try {
         return await eth.getTransaction(transactionHash);

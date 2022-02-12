@@ -1,12 +1,9 @@
 const replayBlock = require("./replay-block");
 const sendPostAndRetry = require('../general/sendPostAndRetry')
 const delay = require("../general/delay");
+const getBlockNumber = require("./eth-utils/get-latest-block-number")
+const getBlock = require("./eth-utils/extract-geth-block")
 
-const Web3 = require('web3');
-const provider = 'http://localhost:8545';
-const web3Provider = new Web3.providers.HttpProvider(provider);
-const web3 = new Web3(web3Provider);
-const eth = web3.eth;
 const serverAddress = 'http://localhost:3000'
 
 //TODO: Mode can be better
@@ -19,10 +16,13 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
         if(verbose)
             console.log("Looking for a new block...")
 
-        blockNumber = await eth.getBlockNumber(); //Get the latest block's number from geth
+        blockNumber = await getBlockNumber() //Get the latest block's number from geth
+
         if(verbose)
             console.log("The most recent block is " + blockNumber)
+
         blockNumber = blockNumber - 30; //To make sure the block is confirmed
+
         if(verbose)
             console.log("looking at block " + blockNumber + " considering it confirmed.")
 
@@ -37,7 +37,7 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
         if(verbose)
             console.log("fetching block " + blockNumber + "'s data.")
         // We are getting block data two times in the whole process (once fetchBlock and once here), is that ok?
-        blockData = await eth.getBlock(blockNumber)
+        let blockData = await getBlock(blockNumber)
 
         if(verbose)
             console.log("Replaying Block " + blockNumber);
@@ -47,10 +47,9 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
         if(debug) {
             console.log("onlyIfFailed:" + onlyIfFailed)
             console.log("includeAllFailed" + includeAllFailed)
+            console.log("before replay block: blockNumber " + blockNumber + " verbose " + verbose + " onlyIfFailed " + onlyIfFailed + " includeAllFailed " + includeAllFailed)
         }
 
-        if(debug)
-            console.log("before replay block: blockNumber " + blockNumber + " verbose " + verbose + " onlyIfFailed " + onlyIfFailed + " includeAllFailed " + includeAllFailed)
         let transactions = await replayBlock(blockNumber, verbose, onlyIfFailed, includeAllFailed);
 
         if(verbose) {
@@ -86,7 +85,7 @@ async function handleBlockRepetition(verbose = false){
     }
     await delay(10000);
     if(verbose)
-        console.log("sleeping is over!")
+        console.log("sleep is over! I'm awake 8-)")
 }
 
 function handleMode(mode) {

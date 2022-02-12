@@ -6,8 +6,8 @@ var eth = web3.eth;
 
 async function fetchBlock(blockNumber, verbose = false){
     try{
-        blockData = await eth.getBlock(blockNumber);
-        return blockData.transactions;
+        let blockData = await eth.getBlock(blockNumber);
+        return blockData;
     }catch (e) {
         console.log("Could not retrieve data from block " + blockNumber + ". Try a block with lower depth.");
         return false;
