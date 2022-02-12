@@ -9,7 +9,7 @@ const web3 = new Web3(web3Provider);
 const eth = web3.eth;
 const serverAddress = 'http://localhost:3000'
 
-debug = true
+debug = false
 
 //TODO: Mode can be better
 async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
@@ -22,7 +22,11 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
             console.log("Looking for a new block...")
 
         blockNumber = await eth.getBlockNumber(); //Get the latest block's number from geth
+        if(verbose)
+            console.log("The most recent block is " + blockNumber)
         blockNumber = blockNumber - 30; //To make sure the block is confirmed
+        if(verbose)
+            console.log("looking at block " + blockNumber + " considering it confirmed.")
 
         if(verbose)
             console.log("Latest block number is (after subtracting the amount) " + blockNumber)
@@ -39,7 +43,7 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
 
         if(verbose)
             console.log("Replaying Block " + blockNumber);
-        
+
         let {onlyIfFailed, includeAllFailed} = handleMode(mode);
 
         if(debug) {
@@ -48,7 +52,7 @@ async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
         }
 
         if(debug)
-            console.log("XXXXXXXXXXXXXXXXXXXXXXXbefore replay block: blockNumber " + blockNumber + " verbose " + verbose + " onlyIfFailed " + onlyIfFailed + " includeAllFailed " + includeAllFailed)
+            console.log("before replay block: blockNumber " + blockNumber + " verbose " + verbose + " onlyIfFailed " + onlyIfFailed + " includeAllFailed " + includeAllFailed)
         let transactions = await replayBlock(blockNumber, verbose, onlyIfFailed, includeAllFailed);
 
         if(verbose) {

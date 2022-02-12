@@ -1,5 +1,5 @@
 const fetchBlock = require("../etherscan/extract-etherscan-block");
-const replayTransactions = require("./transaction-extractor");
+const replayTransaction = require("./transaction-extractor");
 
 debug = false
 
@@ -11,7 +11,7 @@ async function replayBlock(blockNumber, verbose = false, onlyIfFailed = false, i
     index = 0
     for (const tx of arrayOfBlocksTransactions) {
         index += 1;
-        let resultOfTransactionReplay = await replayTransactions(tx, onlyIfFailed, includeAllFailed)
+        let resultOfTransactionReplay = await replayTransaction(tx, onlyIfFailed, includeAllFailed)
         if(resultOfTransactionReplay){
             results.push(resultOfTransactionReplay)
             if(verbose)

@@ -12,7 +12,10 @@ const testTransactionReplay = require('./test/test-transaction-replay')
 
 listenForLatestBlockAndReplay(2, true)
 
-// replayBlock(14182666, true, false, false);
+// replayBlock(14187204, true, false, false);
 
 
-// testTransactionReplay('0x28add291ce43bbe0982479fae0cb72e4a75af6ff142bc58f271c70c10581b4c0', 14182644).then(x => console.log(x));
+//interesting blocks
+//14187159
+
+// testTransactionReplay('0xd049e97242f59ce85e2c457ecd56dc662e1a5db189c8753a0a3853b4d2b2db33', 14187817).then(x => console.log(x));

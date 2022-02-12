@@ -3,8 +3,10 @@ var provider = 'http://localhost:8545';
 var web3Provider = new Web3.providers.HttpProvider(provider);
 var web3 = new Web3(web3Provider);
 var eth = web3.eth;
+const callGethTransaction = require('../geth/call-geth-transactions')
 
 const previousStateDepth = 1;
+debug = true
 
 async function transactionExtractor(tx_hash) {
     try {
@@ -24,19 +26,8 @@ async function transactionReceiptExtractor(tx_hash) {
     }
 }
 
-async function callTransaction(txObject, blockNumber) {
-    try {
-        await eth.call(txObject, blockNumber);
-        return true
-    } catch (e){
-        // Considering that every error relates to the transaction actually failing after the simulation
-        //TODO check and see if there is a difference between the transaction failing onChain or in code
-        return false
-    }
-}
-
 //TODO is returning false a good choice here?
-async function reportTransactionReplay(txHash, onlyIfFailed, includeAllFailed){
+async function replayTransaction(txHash, onlyIfFailed, includeAllFailed){
     const transactionReceipt = await transactionReceiptExtractor(txHash);
 
     if(!transactionReceipt) {
@@ -55,7 +46,11 @@ async function reportTransactionReplay(txHash, onlyIfFailed, includeAllFailed){
 
     const blockNumber = transactionObject.blockNumber
 
-    const simulationResult = await callTransaction(transactionObject, blockNumber - previousStateDepth); // We want to run the transaction from the previous block
+    // const simulationResult = await callTransaction(transactionObject, blockNumber - previousStateDepth); // We want to run the transaction from the previous block
+    //*******
+
+    const simulationResult = await callGethTransaction(transactionObject, blockNumber - previousStateDepth)
+
     //if a transaction was failed or ran at the start
     if (simulationResult !== transactionReceipt.status || (!transactionReceipt.status && includeAllFailed)){
         // return {chainReceipt: transactionReceipt.status, simulatedRun: simulationResult, transactionHash: transactionObject.hash, blockNumber: blockNumber, transactionIndex: transactionObject.transactionIndex}
@@ -64,4 +59,4 @@ async function reportTransactionReplay(txHash, onlyIfFailed, includeAllFailed){
     return false
 }
 
-module.exports = reportTransactionReplay;
+module.exports = replayTransaction;
