@@ -9,8 +9,6 @@ const web3 = new Web3(web3Provider);
 const eth = web3.eth;
 const serverAddress = 'http://localhost:3000'
 
-debug = false
-
 //TODO: Mode can be better
 async function listenForLatestBlockAndReplay(mode = 2, verbose = false){
 

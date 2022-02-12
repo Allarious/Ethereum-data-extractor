@@ -24,22 +24,4 @@ async function transactionReceiptExtractor(transactionHash) {
     }
 }
 
-async function extractTransactionInfo(transactionHash){
-
-    let transactionReceipt = await transactionReceiptExtractor(transactionHash);
-    let transactionObject = null;
-
-    if(!transactionReceipt) {
-        return {transactionReceipt: null, transactionObject: null}
-    }
-
-    transactionObject = await transactionExtractor(transactionHash);
-
-    if(!transactionObject){
-        return {transactionReceipt, transactionObject: null}
-    }
-
-    return { transactionReceipt, transactionObject }
-}
-
-module.exports = extractTransactionInfo;
+module.exports = {transactionExtractor, transactionReceiptExtractor};

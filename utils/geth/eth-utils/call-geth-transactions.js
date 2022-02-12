@@ -14,8 +14,11 @@ async function callTransactionsViaGeth(transactionData, blockNumber, verbose = f
         // This line will be reached if eth.call is not throwing data
         // if eth.call changes in the future and returns something for failed transactions, this code will be wrong.
         if(verbose){
-            console.log(result)
             console.log("Successful!")
+        }
+
+        if(debug){
+            console.log(result)
         }
         return {simulationResult: true, simulationInfo: result}
     } catch (e){
