@@ -26,7 +26,7 @@ async function callTransactionsViaGeth(transactionData, blockNumber, verbose = f
         //TODO check and see if there is a difference between the transaction failing onChain or in code
         if(verbose){
             console.log("FAILED!")
-            console.log(e)
+            console.log(e.message)
         }
         return {simulationResult: false, simulationInfo: e}
     }
